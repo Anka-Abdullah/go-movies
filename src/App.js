@@ -1,6 +1,19 @@
-import { Link, Outlet } from "react-router-dom";
+import { useState } from "react";
+import { Link, Outlet, useNavigate } from "react-router-dom";
+import Alert from "./components/Alert";
 
 function App() {
+  const [jwtToken, setJwtToken] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertClassName, setAlertClassName] = useState("");
+
+  const navigate = useNavigate()
+
+  const logOut = () => {
+    setJwtToken("")
+    navigate("/login")
+  }
+
   return (
     <div className="container">
       <div className="row">
@@ -8,9 +21,15 @@ function App() {
           <h1 className="mt-3">Go watch a Movie!</h1>
         </div>
         <div className="col text-end">
-          <Link to="/login">
-            <span className="badge bg-success">Login</span>
-          </Link>
+          {jwtToken === "" ? (
+            <Link to="/login">
+              <span className="badge bg-success">Login</span>
+            </Link>
+          ) : (
+            <a href="#!" onClick={logOut}>
+              <span className="badge- badge-dangr">Logout</span>
+            </a>
+          )}
         </div>
         <hr className="mb-3"></hr>
       </div>
@@ -56,7 +75,15 @@ function App() {
           </nav>
         </div>
         <div className="col-md-10">
-          <Outlet />
+          <Alert message={alertMessage} className={alertClassName} />
+          <Outlet
+            context={{
+              jwtToken,
+              setJwtToken,
+              setAlertClassName,
+              setAlertMessage,
+            }}
+          />
         </div>
       </div>
     </div>
